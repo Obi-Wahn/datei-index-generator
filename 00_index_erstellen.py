@@ -42,7 +42,13 @@ def collect_files() -> list:
 
 
 def load_template() -> tuple:
+    if not TEMPLATE_FILE.is_file():
+        raise FileNotFoundError(f"Template-Datei nicht gefunden: {TEMPLATE_FILE.name}")
+
     template = TEMPLATE_FILE.read_text(encoding="utf-8")
+    if CONTENT_MARKER not in template:
+        raise ValueError(f"Template-Datei enthaelt keinen Platzhalter '{CONTENT_MARKER}'.")
+
     html_top, html_bottom = template.split(CONTENT_MARKER, 1)
     return html_top, html_bottom
 

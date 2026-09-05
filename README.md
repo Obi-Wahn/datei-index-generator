@@ -52,6 +52,16 @@ python 00_index_erstellen.py
 powershell -ExecutionPolicy Bypass -File .\00_IndexErstellen.ps1
 ```
 
+## Tests
+
+Für die Python-Hilfsfunktionen (natürliche Sortierung, alphabetische
+Gruppierung, Template-Ladefehler) gibt es Unit-Tests auf Basis der
+Standardbibliothek `unittest`:
+
+```bash
+python -m unittest discover -s tests
+```
+
 ## Dateien
 
 | Datei | Zweck |
@@ -61,6 +71,7 @@ powershell -ExecutionPolicy Bypass -File .\00_IndexErstellen.ps1
 | `index_template.html` | Gemeinsames HTML/CSS/JS-Template beider Skripte |
 | `00_IndexErstellen - Python.bat` | Windows-Starter für die Python-Variante |
 | `00_IndexErstellen - PowerShell.bat` | Windows-Starter für die PowerShell-Variante |
+| `tests/` | Unit-Tests für die Python-Variante |
 
 ## Lizenz
 
