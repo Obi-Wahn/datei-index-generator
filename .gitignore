@@ -1,0 +1,6 @@
+# Generierter Index (wird bei jedem Lauf neu erzeugt)
+00_index.html
+
+# Python
+__pycache__/
+*.pyc
