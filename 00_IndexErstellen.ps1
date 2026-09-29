@@ -17,7 +17,8 @@ try {
                  $_.Name -ne $templateFileName
              })
 
-    # Natürliche Sortierung für PowerShell (Padding auf 20 Stellen erhöht für absolute Sicherheit)
+    # Natuerliche Sortierung: Zahlen werden auf 20 Stellen mit Nullen aufgefuellt,
+    # damit "2" vor "10" steht (gilt fuer Zahlen mit bis zu 20 Stellen)
     $files = $files | Sort-Object -Property @{
         Expression = {
             $evaluator = [System.Text.RegularExpressions.MatchEvaluator] {
@@ -110,6 +111,8 @@ try {
     Write-Host "Index erfolgreich aktualisiert: $outputFileName"
 
 } catch {
-    Write-Error "Der Index konnte nicht erstellt werden: $($_.Exception.Message)"
+    # Kein Write-Error: Wegen $ErrorActionPreference = "Stop" wuerde es hier selbst
+    # einen neuen Abbruch ausloesen und "exit 1" nie erreicht werden.
+    [Console]::Error.WriteLine("Der Index konnte nicht erstellt werden: $($_.Exception.Message)")
     exit 1
 }

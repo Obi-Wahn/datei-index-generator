@@ -31,6 +31,13 @@ class NaturalSortKeyTests(unittest.TestCase):
             ["Formel 1.pdf", "Formel 1²2.pdf", "²1.pdf"],
         )
 
+    def test_umlauts_and_accents_sort_like_base_letter(self):
+        names = ["Azubi.pdf", "Ärger.pdf", "Écran.pdf", "Apfel.pdf", "Ende.pdf"]
+        self.assertEqual(
+            sorted(names, key=index_erstellen.natural_sort_key),
+            ["Apfel.pdf", "Ärger.pdf", "Azubi.pdf", "Écran.pdf", "Ende.pdf"],
+        )
+
     def test_names_without_numbers(self):
         names = ["c.pdf", "a.pdf", "b.pdf"]
         self.assertEqual(
@@ -52,6 +59,14 @@ class GetGroupLetterTests(unittest.TestCase):
     def test_non_letter_first_character_falls_back_to_hash(self):
         self.assertEqual(index_erstellen.get_group_letter("1_intro.pdf"), "#")
         self.assertEqual(index_erstellen.get_group_letter("_privat.pdf"), "#")
+
+
+class SortGroupLettersTests(unittest.TestCase):
+    def test_hash_first_and_accented_letters_in_alphabetical_position(self):
+        self.assertEqual(
+            index_erstellen.sort_group_letters(["Z", "É", "A", "#", "F", "E"]),
+            ["#", "A", "E", "É", "F", "Z"],
+        )
 
 
 class LoadTemplateTests(unittest.TestCase):

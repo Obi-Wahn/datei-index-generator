@@ -17,6 +17,10 @@ if not "%exitCode%"=="0" (
     echo.
     echo Beim Erstellen des Index ist ein Fehler aufgetreten.
     pause
+) else (
+    echo.
+    echo Dieses Fenster schliesst sich in 5 Sekunden.
+    timeout /t 5 >nul
 )
 
 exit /b %exitCode%
