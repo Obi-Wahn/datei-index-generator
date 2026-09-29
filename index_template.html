@@ -40,7 +40,9 @@
             let visibleCount = 0;
 
             group.querySelectorAll("li").forEach(item => {
-                const matches = item.textContent.toLocaleLowerCase("de").includes(filter);
+                // Nur den Dateinamen durchsuchen, nicht das Typ-Etikett (PDF/HTML)
+                const fileName = item.querySelector(".file-name").textContent;
+                const matches = fileName.toLocaleLowerCase("de").includes(filter);
                 item.hidden = !matches;
                 if (matches) {
                     visibleCount++;

@@ -1,5 +1,6 @@
 import sys
 import re
+import unicodedata
 from html import escape
 from urllib.parse import quote
 from pathlib import Path
@@ -11,9 +12,17 @@ CONTENT_MARKER = "<!-- CONTENT -->"
 ALLOWED_EXTENSIONS = {".html", ".htm", ".pdf"}
 
 
+def normalize_for_sort(text: str) -> str:
+    # Akzente/Umlaute fuer den Vergleich entfernen (Ä -> a, É -> e, ß -> ss),
+    # damit wie im Woerterbuch sortiert wird und nicht nach Unicode-Codepunkt.
+    decomposed = unicodedata.normalize("NFD", text)
+    without_marks = "".join(char for char in decomposed if not unicodedata.combining(char))
+    return without_marks.casefold()
+
+
 def natural_sort_key(filename: str) -> list:
     return [
-        int(part) if part.isdigit() else part.casefold()
+        int(part) if part.isdecimal() else normalize_for_sort(part)
         for part in re.split(r"(\d+)", filename)
     ]
 
@@ -26,6 +35,11 @@ def get_group_letter(filename: str) -> str:
         return "#"
 
     return german_mapping.get(first_character.lower(), first_character.upper())
+
+
+def sort_group_letters(letters) -> list:
+    # "#" zuerst, danach Buchstaben sprachgerecht (z. B. "É" zwischen "E" und "F")
+    return sorted(letters, key=lambda letter: (letter != "#", normalize_for_sort(letter), letter))
 
 
 def collect_files() -> list:
@@ -59,7 +73,7 @@ def render_file_list(files: list) -> str:
         letter = get_group_letter(path.name)
         grouped_files.setdefault(letter, []).append(path)
 
-    sorted_letters = sorted(grouped_files.keys())
+    sorted_letters = sort_group_letters(grouped_files)
 
     file_label = "Datei" if len(files) == 1 else "Dateien"
     content = f'    <p id="fileCount" class="file-count">{len(files)} {file_label} gefunden</p>\n'
