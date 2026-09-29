@@ -52,12 +52,15 @@ try {
 
     $groupedFiles = $files | Group-Object {
         $firstChar = $_.Name.Substring(0,1).ToLower()
+        # Umlaute als Unicode-Escapes, damit die Zuordnung unabhaengig von der
+        # Dateikodierung funktioniert (Windows PowerShell 5.1 liest Skripte ohne BOM als ANSI).
+        # "break" verhindert, dass zusaetzlich der allgemeine Buchstaben-Zweig greift.
         switch -Regex ($firstChar) {
-            "ä" { "A" }
-            "ö" { "O" }
-            "ü" { "U" }
-            "ß" { "S" }
-            "\p{L}" { $firstChar.ToUpper() }
+            "\u00E4" { "A"; break }
+            "\u00F6" { "O"; break }
+            "\u00FC" { "U"; break }
+            "\u00DF" { "S"; break }
+            "\p{L}" { $firstChar.ToUpper(); break }
             default { "#" }
         }
     } | Sort-Object Name

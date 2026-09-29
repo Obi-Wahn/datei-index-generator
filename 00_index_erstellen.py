@@ -13,7 +13,7 @@ ALLOWED_EXTENSIONS = {".html", ".htm", ".pdf"}
 
 def natural_sort_key(filename: str) -> list:
     return [
-        int(part) if part.isdigit() else part.casefold()
+        int(part) if part.isdecimal() else part.casefold()
         for part in re.split(r"(\d+)", filename)
     ]
 

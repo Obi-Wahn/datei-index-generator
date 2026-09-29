@@ -24,6 +24,13 @@ class NaturalSortKeyTests(unittest.TestCase):
             ["apfel.pdf", "Banane.pdf"],
         )
 
+    def test_superscript_digits_do_not_crash(self):
+        names = ["Formel 1²2.pdf", "²1.pdf", "Formel 1.pdf"]
+        self.assertEqual(
+            sorted(names, key=index_erstellen.natural_sort_key),
+            ["Formel 1.pdf", "Formel 1²2.pdf", "²1.pdf"],
+        )
+
     def test_names_without_numbers(self):
         names = ["c.pdf", "a.pdf", "b.pdf"]
         self.assertEqual(
