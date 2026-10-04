@@ -12,6 +12,8 @@ Suchfunktion verwenden und dasselbe Ergebnis erzeugen.
 
 - Durchsucht **nur den Ordner, in dem sich das Skript befindet** (nicht
   rekursiv) nach Dateien mit den Endungen `.html`, `.htm` und `.pdf`.
+  Versteckte Dateien (Windows-Attribut „versteckt“ bzw. „System“ oder Name
+  mit `.` am Anfang) werden nicht aufgelistet.
 - Sortiert die Dateien natürlich (Zahlen im Namen werden als Zahl, nicht als
   Zeichenkette verglichen) und wie im Wörterbuch: Groß-/Kleinschreibung,
   Umlaute und Akzente spielen für die Reihenfolge keine Rolle
@@ -23,7 +25,8 @@ Suchfunktion verwenden und dasselbe Ergebnis erzeugen.
     hinter dem Grundbuchstaben steht (z. B. `É` hinter `E`).
   - Dateien, die nicht mit einem Buchstaben beginnen (z. B. `1_intro.pdf`),
     landen in der Gruppe **`#`** ganz am Anfang.
-- Das Suchfeld filtert live nach dem **Dateinamen**.
+- Das Suchfeld filtert live nach dem **Dateinamen**. Groß-/Kleinschreibung,
+  Umlaute und Akzente spielen dabei keine Rolle (`arger` findet `Ärger.html`).
 - Schreibt das Ergebnis nach `00_index.html` im selben Ordner. Diese Datei
   wird bei jedem Lauf überschrieben und ist deshalb in `.gitignore`
   aufgeführt.

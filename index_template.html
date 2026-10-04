@@ -12,28 +12,34 @@
         .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         #searchInput { width: 100%; padding: 15px 20px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: border-color 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         #searchInput:focus { border-color: #3498db; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .file-count { color: #7f8c8d; font-size: 0.9em; margin-bottom: 20px; }
+        .file-count { color: #5d6d7e; font-size: 0.9em; margin-bottom: 20px; }
         .nav-alphabet { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .nav-alphabet a { display: inline-block; padding: 8px 14px; background-color: #e9ecef; color: #2c3e50; text-decoration: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
-        .nav-alphabet a:hover { background-color: #3498db; color: #ffffff; transform: translateY(-2px); }
-        h2.letter-header { color: #3498db; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; }
+        .nav-alphabet a:hover { background-color: #2471a3; color: #ffffff; transform: translateY(-2px); }
+        h2.letter-header { color: #2471a3; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; }
         ul { list-style-type: none; padding: 0; }
         li { margin: 12px 0; }
         .file-link { display: block; text-decoration: none; color: #2c3e50; background-color: #ffffff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #3498db; transition: all 0.2s ease-in-out; }
-        .file-link:hover { background-color: #3498db; color: #ffffff; transform: translateX(8px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .file-link:hover { background-color: #2471a3; color: #ffffff; transform: translateX(8px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .file-type-tag { display: inline-block; background: #e2e8f0; color: #334155; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; margin-right: 8px; font-weight: bold; vertical-align: middle; }
         .file-name { font-weight: bold; }
-        .back-to-top { display: inline-block; margin-top: 10px; font-size: 0.9em; color: #7f8c8d; text-decoration: none; }
-        .back-to-top:hover { color: #3498db; text-decoration: underline; }
+        .back-to-top { display: inline-block; margin-top: 10px; font-size: 0.9em; color: #5d6d7e; text-decoration: none; }
+        .back-to-top:hover { color: #2471a3; text-decoration: underline; }
     </style>
 </head>
 <body id="top">
     <h1>Meine Dokumente</h1>
     <!-- CONTENT -->
     <script>
+    // Gross-/Kleinschreibung, Umlaute und Akzente ignorieren,
+    // damit z. B. "arger" auch die Datei mit A-Umlaut findet (wie bei der Sortierung)
+    function normalizeForSearch(text) {
+        return text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase("de");
+    }
+
     function filterFiles() {
         const input = document.getElementById("searchInput");
-        const filter = input.value.toLocaleLowerCase("de");
+        const filter = normalizeForSearch(input.value.trim());
         let totalVisible = 0;
 
         document.querySelectorAll(".file-group").forEach(group => {
@@ -42,7 +48,7 @@
             group.querySelectorAll("li").forEach(item => {
                 // Nur den Dateinamen durchsuchen, nicht das Typ-Etikett (PDF/HTML)
                 const fileName = item.querySelector(".file-name").textContent;
-                const matches = fileName.toLocaleLowerCase("de").includes(filter);
+                const matches = normalizeForSearch(fileName).includes(filter);
                 item.hidden = !matches;
                 if (matches) {
                     visibleCount++;
@@ -64,6 +70,14 @@
             countDisplay.textContent = totalVisible === 1 ? "1 Datei gefunden" : `${totalVisible} Dateien gefunden`;
         }
     }
+
+    // Nach "Zurueck" stellt der Browser den Suchtext wieder her, die Liste aber nicht.
+    // Deshalb beim Anzeigen der Seite den Filter erneut anwenden.
+    window.addEventListener("pageshow", () => {
+        if (document.getElementById("searchInput")) {
+            filterFiles();
+        }
+    });
     </script>
 </body>
 </html>

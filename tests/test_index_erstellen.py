@@ -69,6 +69,23 @@ class SortGroupLettersTests(unittest.TestCase):
         )
 
 
+class CollectFilesTests(unittest.TestCase):
+    def setUp(self):
+        self._original_script_dir = index_erstellen.SCRIPT_DIR
+
+    def tearDown(self):
+        index_erstellen.SCRIPT_DIR = self._original_script_dir
+
+    def test_skips_hidden_index_template_and_other_extensions(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            for name in ["b.pdf", "a.html", ".versteckt.pdf", "._a.html",
+                         "00_index.html", "index_template.html", "notiz.txt"]:
+                (Path(tmp_dir) / name).touch()
+            index_erstellen.SCRIPT_DIR = Path(tmp_dir)
+            names = [path.name for path in index_erstellen.collect_files()]
+        self.assertEqual(names, ["a.html", "b.pdf"])
+
+
 class LoadTemplateTests(unittest.TestCase):
     def setUp(self):
         self._original_template_file = index_erstellen.TEMPLATE_FILE
