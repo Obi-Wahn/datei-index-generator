@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 try {
-    # Saubere Pfadbehandlung unabhängig vom Aufrufort
+    # Saubere Pfadbehandlung unabhaengig vom Aufrufort
     $outputFileName = "00_index.html"
     $templateFileName = "index_template.html"
     $outputPath = Join-Path -Path $PSScriptRoot -ChildPath $outputFileName
@@ -9,10 +9,13 @@ try {
     $contentMarker = "<!-- CONTENT -->"
     $allowedExtensions = @(".html", ".htm", ".pdf")
 
-    # Dateien sicher sammeln (inklusive Verstecken von Index- und Template-Datei)
+    # Dateien sammeln, ohne Index- und Template-Datei. Versteckte und Systemdateien
+    # laesst Get-ChildItem ohne -Force ohnehin aus; Namen mit "." am Anfang werden
+    # zusaetzlich uebersprungen (wie im Python-Skript).
     $files = @(Get-ChildItem -LiteralPath $PSScriptRoot -File |
              Where-Object {
                  $allowedExtensions -contains $_.Extension.ToLower() -and
+                 -not $_.Name.StartsWith(".") -and
                  $_.Name -ne $outputFileName -and
                  $_.Name -ne $templateFileName
              })
@@ -105,7 +108,7 @@ try {
 
     $finalHtml = $htmlTop + $htmlMiddle + $listItems + $htmlBottom
 
-    # Datei schreiben über .NET-Klasse, um das BOM zu verhindern
+    # Datei schreiben ueber .NET-Klasse, um das BOM zu verhindern
     [System.IO.File]::WriteAllText($outputPath, $finalHtml, $utf8NoBom)
 
     Write-Host "Index erfolgreich aktualisiert: $outputFileName"

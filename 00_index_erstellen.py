@@ -1,5 +1,6 @@
 import sys
 import re
+import stat
 import unicodedata
 from html import escape
 from urllib.parse import quote
@@ -42,12 +43,21 @@ def sort_group_letters(letters) -> list:
     return sorted(letters, key=lambda letter: (letter != "#", normalize_for_sort(letter), letter))
 
 
+def is_hidden(path: Path) -> bool:
+    # Wie im PowerShell-Skript: Namen mit "." am Anfang sowie Dateien mit dem
+    # Windows-Attribut "versteckt" oder "System" werden nicht aufgelistet
+    attributes = getattr(path.stat(), "st_file_attributes", 0)
+    hidden_or_system = stat.FILE_ATTRIBUTE_HIDDEN | stat.FILE_ATTRIBUTE_SYSTEM
+    return path.name.startswith(".") or bool(attributes & hidden_or_system)
+
+
 def collect_files() -> list:
     excluded_names = {OUTPUT_FILE.name.casefold(), TEMPLATE_FILE.name.casefold()}
     return sorted(
         (
             path for path in SCRIPT_DIR.iterdir()
             if path.is_file()
+            and not is_hidden(path)
             and path.name.casefold() not in excluded_names
             and path.suffix.casefold() in ALLOWED_EXTENSIONS
         ),
