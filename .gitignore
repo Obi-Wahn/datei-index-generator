@@ -4,3 +4,6 @@
 # Python
 __pycache__/
 *.pyc
+
+# Lokale Claude-Code-Einstellungen (koennen erlaubte Befehle mit Zugangsdaten enthalten)
+.claude/settings.local.json
